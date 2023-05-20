@@ -27,6 +27,12 @@ async function run() {
     await client.connect();
 
     const toysCollection = client.db('ToysDB').collection('toys')
+    const toysCategoryCollection = client.db('ToysDB').collection('categoryWise')
+
+    app.get('/categoryWise', async(req, res) => {
+        const result = await toysCategoryCollection.find().toArray();
+        res.send(result);
+    })
 
     app.post('/addToy', async(req, res) => {
         const body = req.body;
