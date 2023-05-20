@@ -14,45 +14,51 @@ const uri = `mongodb+srv://${process.env.USER_ID}:${process.env.USER_KEY}@cluste
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  }
+    serverApi: {
+        version: ServerApiVersion.v1,
+        strict: true,
+        deprecationErrors: true,
+    }
 });
 
 async function run() {
-  try {
-    // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    try {
+        // Connect the client to the server	(optional starting in v4.7)
+        await client.connect();
 
-    const toysCollection = client.db('ToysDB').collection('toys')
-    const toysCategoryCollection = client.db('ToysDB').collection('categoryWise')
+        const toysCollection = client.db('ToysDB').collection('toys')
+        const toysCategoryCollection = client.db('ToysDB').collection('categoryWise')
 
-    app.get('/categoryWise', async(req, res) => {
-        const result = await toysCategoryCollection.find().toArray();
-        res.send(result);
-    })
+        app.get('/categoryWise/:text', async (req, res) => {
+            if (req.params.text == "teddy bear" || req.params.text == "shock monkey" || req.params.text == "zhuzhu pet") {
 
-    app.post('/addToy', async(req, res) => {
-        const body = req.body;
-        const result = await toysCollection.insertOne(body);
-        res.send(result)
-        console.log(result);
-    })
+                const result = await toysCategoryCollection.find({ status: req.params.text }).toArray();
+                return res.send(result);
+            }
 
-    app.get('/allToys', async(req, res) => {
-        const result = await toysCollection.find().toArray();
-        res.send(result);
-    })
+            const result = await toysCategoryCollection.find().toArray();
+            res.send(result);
+        })
 
-    // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
-  } finally {
-    // Ensures that the client will close when you finish/error
-    // await client.close();
-  }
+        app.post('/addToy', async (req, res) => {
+            const body = req.body;
+            const result = await toysCollection.insertOne(body);
+            res.send(result)
+            console.log(result);
+        })
+
+        app.get('/allToys', async (req, res) => {
+            const result = await toysCollection.find().toArray();
+            res.send(result);
+        })
+
+        // Send a ping to confirm a successful connection
+        await client.db("admin").command({ ping: 1 });
+        console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    } finally {
+        // Ensures that the client will close when you finish/error
+        // await client.close();
+    }
 }
 run().catch(console.dir);
 
