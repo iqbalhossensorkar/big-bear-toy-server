@@ -84,6 +84,28 @@ async function run() {
             res.send(result);
         })
 
+        app.put('/updateJob/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) }
+            const updateToys = req.body;
+            const options = {upsert: true}
+            const updateDoc = {
+                $set: {
+                    toyName: updateToys.toyName,
+                    photoURL: updateToys.photoURL,
+                    sellerName: updateToys.sellerName,
+                    sellerEmail: updateToys.sellerEmail,
+                    price: updateToys.price,
+                    quantity: updateToys.quantity,
+                    subCategory: updateToys.subCategory,
+                    rating: updateToys.rating,
+                    message: updateToys.message
+                }
+            }
+            const result = await toysCollection.updateOne(filter, updateDoc, options);
+            res.send(result);
+        })
+
         app.delete('/myToys/:id', async (req, res) => {
             const id = req.params.id;
             // console.log(id);
@@ -95,8 +117,8 @@ async function run() {
 
         app.get('/toySearchByTitle/:text', async (req, res) => {
             const result = await toysCollection.find({
-                $or:[
-                    {toyName: req.params.text}
+                $or: [
+                    { toyName: req.params.text }
                 ]
             }).toArray();
             res.send(result);
