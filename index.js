@@ -84,7 +84,7 @@ async function run() {
             res.send(result);
         })
 
-        app.put('/updateJob/:id', async (req, res) => {
+        app.put('/updateToy/:id', async (req, res) => {
             const id = req.params.id;
             const filter = { _id: new ObjectId(id) }
             const updateToys = req.body;
@@ -136,11 +136,11 @@ run().catch(console.dir);
 
 
 app.get('/', (req, res) => {
-    res.send('Car Doctor Server Running')
+    res.send('Big Bear Server Running')
 });
 
 app.listen(port, () => {
-    console.log(`Car Doctor Server Is Running On Port: ${port}`)
+    console.log(`Big Bear Server Is Running On Port: ${port}`)
 })
 
 
