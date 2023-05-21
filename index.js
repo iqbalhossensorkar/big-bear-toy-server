@@ -47,7 +47,7 @@ async function run() {
         app.get('/toyDetail/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) }
-            console.log(query);
+            // console.log(query);
             const result = await toysCategoryCollection.findOne(query)
             res.send(result);
         })
@@ -56,12 +56,19 @@ async function run() {
             const body = req.body;
             const result = await toysCollection.insertOne(body);
             res.send(result)
-            console.log(result);
+            // console.log(result);
         })
 
         app.get('/allToys', async (req, res) => {
-            const result = await toysCollection.find().toArray();
+            const result = await toysCollection.find().sort({price: 1}).limit(20).toArray();
             res.send(result);
+        })
+
+        app.get('/myToys/:email',  async(req, res) => {
+            console.log(req.params.email);
+            const result = await toysCollection.find({sellerEmail: req.params.email}).sort({price: 1}).toArray();
+            // console.log(result);
+            res.send(result)
         })
 
         // Send a ping to confirm a successful connection
