@@ -60,15 +60,46 @@ async function run() {
         })
 
         app.get('/allToys', async (req, res) => {
-            const result = await toysCollection.find().sort({price: 1}).limit(20).toArray();
+            const result = await toysCollection.find().sort({ price: 1 }).limit(20).toArray();
             res.send(result);
         })
 
-        app.get('/myToys/:email',  async(req, res) => {
-            console.log(req.params.email);
-            const result = await toysCollection.find({sellerEmail: req.params.email}).sort({price: 1}).toArray();
+        app.get('/myToys/:email', async (req, res) => {
+            // console.log(req.params.email);
+            const result = await toysCollection.find({ sellerEmail: req.params.email }).sort({ price: 1 }).toArray();
             // console.log(result);
             res.send(result)
+        })
+
+        app.patch('/myToys/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) }
+            const updateToys = req.body;
+            const updateDoc = {
+                $set: {
+                    status: updateToys.status
+                }
+            }
+            const result = await toysCollection.updateOne(filter, updateDoc);
+            res.send(result);
+        })
+
+        app.delete('/myToys/:id', async (req, res) => {
+            const id = req.params.id;
+            // console.log(id);
+            const query = { _id: new ObjectId(id) }
+            const result = await toysCollection.deleteOne(query)
+            console.log(result);
+            res.send(result);
+        })
+
+        app.get('/toySearchByTitle/:text', async (req, res) => {
+            const result = await toysCollection.find({
+                $or:[
+                    {toyName: req.params.text}
+                ]
+            }).toArray();
+            res.send(result);
         })
 
         // Send a ping to confirm a successful connection
